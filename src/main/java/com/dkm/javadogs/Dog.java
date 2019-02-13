@@ -28,5 +28,4 @@ public class Dog
         this.avgWeight = avgWeight;
         this.apt = apt;
     }
-
 }

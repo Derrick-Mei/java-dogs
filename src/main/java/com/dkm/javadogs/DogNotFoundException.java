@@ -4,9 +4,9 @@ package com.dkm.javadogs;
 
 public class DogNotFoundException extends RuntimeException
 {
-    public DogNotFoundException(Long id)
+    public DogNotFoundException(String breee)
     {
-        super("Could not find employee with Id: " + id);
+        super("Could not find dog with breed: " + breee);
     }
 
 }

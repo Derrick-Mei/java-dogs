@@ -19,8 +19,9 @@ public class SeedDatabase
             log.info("Seeding: " + dogrepos.save(new Dog("Springer", 50, false)));
             log.info("Seeding: " + dogrepos.save(new Dog("Bulldog", 50, true)));
             log.info("Seeding: " + dogrepos.save(new Dog("Collie", 50, false)));
-            log.info("Seeding: " + dogrepos.save(new Dog("Boston Terrie", 35, true)));
-            log.info("Seeding: " + dogrepos.save(new Dog("Corgie", 35, true)));
+            log.info("Seeding: " + dogrepos.save(new Dog("Boston Terrier", 35, true)));
+            log.info("Seeding: " + dogrepos.save(new Dog("Corgi", 35, true)));
         };
     }
+
 }
