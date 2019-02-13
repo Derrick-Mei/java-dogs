@@ -2,7 +2,7 @@
 
 package com.dkm.javadogs;
 
-public class DogNotFoundException extends RuntimeException
+class DogNotFoundException extends RuntimeException
 {
     public DogNotFoundException(String breee)
     {

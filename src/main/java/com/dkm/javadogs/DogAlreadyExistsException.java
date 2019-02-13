@@ -2,7 +2,7 @@
 
 package com.dkm.javadogs;
 
-public class DogAlreadyExistsException extends RuntimeException
+class DogAlreadyExistsException extends RuntimeException
 {
     public DogAlreadyExistsException(String breee)
     {

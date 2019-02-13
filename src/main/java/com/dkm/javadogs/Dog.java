@@ -11,7 +11,7 @@ import javax.persistence.Id;
 
 @Data
 @Entity
-public class Dog
+class Dog
 {
     private @Id @GeneratedValue Long Id;
     private String breed;

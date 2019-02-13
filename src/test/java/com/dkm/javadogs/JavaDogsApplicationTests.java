@@ -10,10 +10,5 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class JavaDogsApplicationTests
 {
 
-    @Test
-    public void contextLoads()
-    {
-    }
-
 }
 
