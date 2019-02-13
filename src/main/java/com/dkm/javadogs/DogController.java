@@ -7,8 +7,6 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +32,7 @@ public class DogController
     {
         List<Resource<Dog>> dogs = dogrepos.findAll().stream()
                 .map(assembler::toResource)
-                .sorted((a,b) -> a.getContent().getBreed().compareToIgnoreCase(b.getContent().getBreed()))
+                .sorted((a, b) -> a.getContent().getBreed().compareToIgnoreCase(b.getContent().getBreed()))
                 .collect(Collectors.toList());
         return new Resources<>(dogs, linkTo(methodOn(DogController.class).allDogs()).withSelfRel());
     }
@@ -42,7 +40,7 @@ public class DogController
     // ========================================================================================================
 
     @GetMapping("/dogs/weight")
-    public Resources<Resource<Dog>>  returnDogsByWeight()
+    public Resources<Resource<Dog>> returnDogsByWeight()
     {
         List<Resource<Dog>> dogsByWeight = dogrepos.findAll().stream()
                 .map(assembler::toResource)
@@ -57,7 +55,7 @@ public class DogController
     public Resources<Resource<Dog>> returnDogsByApt()
     {
         List<Resource<Dog>> dogsByApt = dogrepos.findAll().stream()
-                .filter(o -> (o.isApt()))
+                .filter(Dog::isApt)
                 .map(assembler::toResource)
                 .collect(Collectors.toList());
 
@@ -88,7 +86,7 @@ public class DogController
         for (Dog o : dogrepos.findAll())
         {
             if (o.getBreed().equalsIgnoreCase(bree))
-                return (Resource<Dog>) assembler.toResource(o);
+                return assembler.toResource(o);
         }
         throw new DogNotFoundException(bree);
 
@@ -96,16 +94,27 @@ public class DogController
 
     // ========================================================================================================
 
+    // Me Try 1
 //    @PutMapping("/dogs/{id}")
 //    public ResponseEntity<?> replaceDog(@RequestBody Dog newDog, @PathVariable Long id)
 //            throws URISyntaxException
 //    {
+//
+//        dogrepos.findAll().forEach(o ->
+//        {
+//            if (o.getBreed().equalsIgnoreCase(newDog.getBreed()))
+//            {
+//                throw new DogAlreadyExistsException(newDog.getBreed());
+//            }
+//        });
+//
 //        Dog updatedDog = dogrepos.findById(id)
 //                .map(dog ->
 //                {
 //                    dog.setApt(newDog.isApt());
 //                    dog.setAvgWeight(newDog.getAvgWeight());
-//                    dog.setBreed(newDog.getBreed());;
+//                    dog.setBreed(newDog.getBreed());
+//                    ;
 //                    return dogrepos.save(dog);
 //                })
 //                .orElseGet(() ->
@@ -124,37 +133,90 @@ public class DogController
 
     // ========================================================================================================
 
-    @PutMapping("/dogs/{id}")
-    public ResponseEntity<?> replaceDog(@RequestBody Dog newDog, @PathVariable Long id)
-            throws URISyntaxException
+    // Me Try 2
+//    @PutMapping("/dogs/{id}")
+//    public ResponseEntity<?> replaceDog(@RequestBody Dog newDog, @PathVariable Long id)
+//            throws URISyntaxException
+//    {
+//        Dog updatedDog = dogrepos.findById(id)
+//                .map(dog ->
+//                {
+//                    dog.setApt(newDog.isApt());
+//                    dog.setAvgWeight(newDog.getAvgWeight());
+//                    dog.setBreed(newDog.getBreed());
+//                    return dogrepos.save(dog);
+//                })
+//                .orElseGet(() ->
+//                {
+//                    newDog.setId(id);
+//                    return dogrepos.save(newDog);
+//                });
+//
+//        Resource<Dog> resource = assembler.toResource(updatedDog);
+//
+//        return ResponseEntity
+//                .created(new URI(resource.getId().expand().getHref()))
+//                .body(resource);
+//    }
+
+    // Harrison ======================================
+//    @PutMapping("/dogs/{id}")
+//    public ResponseEntity<?> replaceDog(@RequestBody Dog newDog, @PathVariable Long id) throws URISyntaxException {
+//        Dog updateDog = dogrepos.findById(id)
+//                .map(dog -> {
+//                    dog.setBreed(newDog.getBreed());
+//                    dog.setAvgWeight(newDog.getAvgWeight());
+//                    dog.setApt(newDog.isApt());
+//                    return dogrepos.save(dog);
+//                })
+//                .orElseGet(() ->{
+//                    newDog.setId(id);
+//                    return dogrepos.save(newDog);
+//                });
+//
+//        Resource<Dog> resource = assembler.toResource(updateDog);
+//        return ResponseEntity
+//                .created(new URI(resource.getId().expand().getHref()))
+//                .body(resource);
+//
+//    }
+
+    // Holly ===================================================
+    @PutMapping("dogs/{id}")
+    public Resource<Dog> updatedDog(@RequestBody Dog dog, @PathVariable Long id)
     {
-        Dog updatedDog = dogrepos.findById(id)
-                .map(dog ->
+        dogrepos.findAll().forEach(o ->
+        {
+            if (o.getBreed().equalsIgnoreCase(dog.getBreed()))
+            {
+                throw new DogAlreadyExistsException(dog.getBreed());
+            }
+        });
+
+        Dog updated = dogrepos.findById(id)
+                .map(d ->
                 {
-                    dog.setApt(newDog.isApt());
-                    dog.setAvgWeight(newDog.getAvgWeight());
-                    dog.setBreed(newDog.getBreed());
-                    return dogrepos.save(dog);
+                    d.setBreed(dog.getBreed());
+                    d.setAvgWeight(dog.getAvgWeight());
+                    d.setApt(dog.isApt());
+                    return dogrepos.save(d);
                 })
-                .orElseGet(() ->
-                {
-                    newDog.setId(id);
-                    return dogrepos.save(newDog);
+                .orElseGet(() ->{
+                    dog.setId(id);
+                    return dogrepos.save(dog);
                 });
 
-        Resource<Dog> resource = assembler.toResource(updatedDog);
-
-        return ResponseEntity
-                .created(new URI(resource.getId().expand().getHref()))
-                .body(resource);
+        return assembler.toResource(updated);
     }
 
+    // ====================================================================
 
-    // ========================================================================================================
+    @DeleteMapping("/dogs/{id}")
+    public ResponseEntity<?> deleteEmployee(@PathVariable Long id)
+    {
+        dogrepos.deleteById(id);
 
-
-
-    // ========================================================================================================
-
+        return ResponseEntity.noContent().build();
+    }
 
 }
